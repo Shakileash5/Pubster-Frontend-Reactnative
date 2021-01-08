@@ -16,12 +16,12 @@ Make sure you have knowledge about react-native,yarn and expo-cli. Follow the [o
 
 * Create the proj
 ``` bash
-    create-react-native-app pubster_frontend
+create-react-native-app pubster_frontend
 ```
 
 * Clone the repo
 ``` bash
-git clone https://github.com/Shakileash5/to-do-app.git
+git clone https://github.com/Shakileash5/Pubster-Frontend-Reactnative.git
 ```
 
 
