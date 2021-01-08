@@ -9,9 +9,16 @@ Make sure you have knowledge about react-native,yarn and expo-cli. Follow the [o
 * npm
   ```sh
   npm install npm@latest -g
+  npm install create-react-native-app
   ```
 
 # Installation
+
+* Create the proj
+``` bash
+    create-react-native-app pubster_frontend
+```
+
 * Clone the repo
 ``` bash
 git clone https://github.com/Shakileash5/to-do-app.git
