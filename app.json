@@ -1,0 +1,12 @@
+{
+  "name": "pubster_frontend",
+  "displayName": "pubster_frontend",
+  "expo": {
+    "name": "pubster_frontend",
+    "slug": "pubster_frontend",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
