@@ -8,6 +8,7 @@ import { CountryDropdown, RegionDropdown, CountryRegionData } from 'react-countr
 import cityData from './allCities.json';
 import firebase from './firebase';
 import "firebase/auth"
+import "firebase/database"
 
 function SignUp({navigation }){
 
@@ -15,6 +16,7 @@ function SignUp({navigation }){
     const [email,setEmail] = useState('');
     const [password,setPassword] = useState('');
     const [gender,setGender] = useState('Male');
+    const [age,setAge] = useState(18);
     const [phoneNo,setPhoneNo] = useState('');
     const [location,setLocation] = useState('');
     const [state,setState] = useState('');
@@ -24,7 +26,10 @@ function SignUp({navigation }){
     const [isLoading, setLoading] = useState(false);
     const stateKey = Object.keys(cityData);
     const [cityKey,setCityKey] = useState(Object.keys(cityData["Tamil Nadu"]));
-    
+    const ageArray = []
+    for(var i=18;i<45;i++){
+        ageArray.push(i);
+    }
    // const {userId } = route.params;
     //console.log(params,"params");
     //console.log(Object.keys(cityData))
@@ -52,7 +57,13 @@ function SignUp({navigation }){
                 setErrorMessage("Enter a valid email id ");
             }
             else{
-                flag = 1
+                if(String(phoneNo).length>10){
+                    setError(1);
+                    setErrorMessage("Enter a valid Phone Number "); 
+                }
+                else{
+                    flag = 1
+                }
             }
         }
         else{
@@ -68,13 +79,16 @@ function SignUp({navigation }){
                     const uid = response.user.uid;
                    // console.log("uid ::: ",uid);
                     firebase
-                        .database().ref("User/"+uid).set({userName:userName,mail:email})
+                        .database().ref("User/"+uid).set({userName:userName,mail:email,age:age,phoneNo:phoneNo,city:city})
+                        .then((response)=>{
+                            navigation.navigate("Login")
+                        })
                         .catch(err =>{
                             console.log("err",err);
                             setError(1);
                             setErrorMessage(err.message); 
                         })
-                    navigation.navigate("login")
+                    
                 }).catch(err =>{
                      console.log("err",err);
                      setError(1);
@@ -108,8 +122,8 @@ function SignUp({navigation }){
                 <Text style={error?{color:"#ED4337",fontsize:11,padding:10,flex:1,justifyContent:"center",textAlign:"center"}:{display:"none"}}> {errorMessage} </Text> 
                 <TextInput style={Styles.inputView} placeholder="Username" onChangeText={(text)=>{setUserName(text)}}></TextInput>
                 <TextInput style={Styles.inputView} placeholder="Email Id" onChangeText={(text)=>{setEmail(text)}}></TextInput>
-                <TextInput style={Styles.inputView} placeholder="Password" onChangeText={(text)=>{setPassword(text)}}></TextInput>
-                <TextInput style={Styles.inputView} placeholder="Phone Number" onChangeText={(text)=>{setPhoneNo(text)}} value={!isNaN(phoneNo)?phoneNo:""}></TextInput>
+                <TextInput style={Styles.inputView} secureTextEntry={true} placeholder="Password" onChangeText={(text)=>{setPassword(text)}}></TextInput>
+                <TextInput style={Styles.inputView} keyboardType='phone-pad' placeholder="Phone Number" onChangeText={(text)=>{setPhoneNo(text)}} value={!isNaN(phoneNo)?phoneNo:""}></TextInput>
                 <Picker
                     selectedValue={gender}
                     style={{backgroundColor:"#3E3E3E",
@@ -165,6 +179,28 @@ function SignUp({navigation }){
                 >
                    { 
                         cityKey.map((data,i)=>{
+                            return(
+                                    <Picker.Item key={i} label={data} value={data} />
+                            );
+                        })
+                    
+                    }
+                </Picker>
+                <Picker
+                    selectedValue={age}
+                    style={{backgroundColor:"#3E3E3E",
+                        borderRadius:20,
+                        height:60,
+                        width:150,
+                        marginBottom:15,
+                        color:"white",
+                        justifyContent:"center",
+                        padding:20,
+                        elevation:15,}}
+                    onValueChange={(itemValue, itemIndex) => setAge(itemValue)}
+                >
+                   { 
+                        ageArray.map((data,i)=>{
                             return(
                                     <Picker.Item key={i} label={data} value={data} />
                             );

@@ -18,25 +18,30 @@ function Login({ navigation }){
 
     const loginPress = ()=>{
         console.log("inside");
-        if(userName!="" && password!=""){
-            setLoading(true);
-            firebase.auth().signInWithEmailAndPassword(userName,password).then((response)=>{
-                const uid = response.user.uid;
-                //console.log(uid,":: uid");
-                navigation.navigate('bitHook',{userId:uid.toString()});
-                
-            }).catch(err =>{
-                console.log("err",err);
+        try{        
+            if(userName!="" && password!=""){
+                setLoading(true);
+                firebase.auth().signInWithEmailAndPassword(userName,password).then((response)=>{
+                    const uid = response.user.uid;
+                    //console.log(uid,":: uid");
+                    navigation.navigate('bitHook',{userId:uid.toString()});
+                    
+                }).catch(err =>{
+                    console.log("err",err);
+                    setError(1);
+                    setErrorMessage(err.message); 
+                }).finally(()=>{
+                    setLoading(false);
+                });
+            }
+            else{
                 setError(1);
-                setErrorMessage(err.message); 
-            }).finally(()=>{
-                setLoading(false);
-            });
+                setErrorMessage("Enter userName and password");
+            }
         }
-        else{
-            setError(1);
-            setErrorMessage("Enter userName and password");
-        }
+        catch(exception){
+            console.log(exception);
+        }    
     }
 
     const constructor = ()=>{
