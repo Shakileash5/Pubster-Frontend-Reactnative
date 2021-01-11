@@ -3,7 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import React,{useState,useEffect} from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { StyleSheet} from 'react-native';
-import bitHook from "./dashScreen"
+import dashScreen from "./dashScreen"
 import Login from "./login"
 import SignUp from "./signup"
 import { BlurView } from 'expo-blur';
@@ -29,7 +29,7 @@ function MyStack() {
                     
                 }} 
             />
-            <Stack.Screen name="bitHook" component={bitHook} 
+            <Stack.Screen name="dashScreen" component={dashScreen} 
                 options={{
                         headerShown:false,
                     }} 

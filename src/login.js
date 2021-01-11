@@ -24,7 +24,7 @@ function Login({ navigation }){
                 firebase.auth().signInWithEmailAndPassword(userName,password).then((response)=>{
                     const uid = response.user.uid;
                     //console.log(uid,":: uid");
-                    navigation.navigate('bitHook',{userId:uid.toString()});
+                    navigation.navigate('dashScreen',{userId:uid.toString()});
                     
                 }).catch(err =>{
                     console.log("err",err);
@@ -53,7 +53,7 @@ function Login({ navigation }){
         firebase.auth().onAuthStateChanged(user =>{
             //console.log(user,"pakalam pa");
             if(user){
-                navigation.navigate('bitHook',{userId:user.uid.toString()});
+                navigation.navigate('dashScreen',{userId:user.uid.toString()});
             }
         })
         setConstructorHasRun(true);
@@ -65,7 +65,7 @@ function Login({ navigation }){
         <View style={Styles.container}>
             {isLoading?<Loading />:null}
             <View style={{alignItems:'center',padding:20,width:"100%"}}>
-                <Text style={Styles.logo}>BitHook</Text>
+                <Text style={Styles.logo}>Pubster</Text>
                 <Text style={error?{color:"#ED4337",fontsize:11,padding:10,flex:1,justifyContent:"center",textAlign:"center"}:{display:"none"}}> {errorMessage} </Text>
                 <TextInput style={Styles.inputView} placeholder="Email Id" onChangeText={(text)=>{setUserName(text);}}  ></TextInput>
                 <TextInput style={Styles.inputView} secureTextEntry={true} placeholder="Password" onChangeText={(text)=>{setPassword(text);}} ></TextInput>
