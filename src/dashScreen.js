@@ -99,8 +99,8 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <View elevation={25} style={styles.header}> 
-        <Text style={{alignSelf:"flex-start",color:"#E6EFF9",fontWeight:"bold",fontSize:18,paddingTop:Constants.statusBarHeight,}}>Pubster</Text>
+      <View elevation={10} style={styles.header}> 
+        <Text style={{alignSelf:"flex-start",color:"#E6EFF9",fontWeight:"bold",fontSize:18,}}>Pubster</Text>
       </View>
       <ScrollView style={styles.cardView} refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -108,8 +108,8 @@ export default function App() {
         {    
             pubs.map((pub,i)=>{
                 return(
-                  <View key={i} style={{flex:1,flexDirection:"column",borderRadius:20,backgroundColor:"#F7F6FA",padding:5,margin:10}} elevation={20}>
-                      <Text style={{fontSize:25,fontWeight:"700",color:"Black",paddingTop:40}}>
+                  <View key={i} style={{flex:1,flexDirection:"column",borderRadius:20,backgroundColor:"#F7F6FA",padding:5,margin:10,paddingLeft:10}} elevation={7}>
+                      <Text style={{fontSize:25,fontWeight:"700",color:"black",paddingTop:40}}>
                           {pub.name}
                       </Text>
                       <Text>
@@ -137,7 +137,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F4F5FA',
+    backgroundColor: '#F3F3FA',
     flexDirection:"column",
     zIndex:0,
   },
@@ -145,9 +145,9 @@ const styles = StyleSheet.create({
     flexDirection:"row",
     width:"100%",
     padding:10,
-    height:25,
+    height:Constants.statusBarHeight+35,
+    paddingTop:30,
     backgroundColor:"#3640F3",
-    height:50,
     borderBottomColor: '#12183A',
     borderBottomWidth: 0.7,
   },
@@ -156,7 +156,6 @@ const styles = StyleSheet.create({
     width:'100%',
     height:'100%',
     flexDirection:"column",
-    borderColor:"grey",
     borderRadius:5,
     marginBottom:5,
   },

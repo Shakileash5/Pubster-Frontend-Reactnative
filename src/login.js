@@ -13,7 +13,7 @@ function Login({ navigation }){
     const [error,setError] = useState(0);
     const [errorMessage,setErrorMessage] = useState("");
     const [isLoading, setLoading] = useState(false);
-    const [constructorHasRun,setConstructorHasRun] = useState(false);
+    const [constructorHasRun,setConstructorHasRun] = useState(true);
 
 
     const loginPress = ()=>{
