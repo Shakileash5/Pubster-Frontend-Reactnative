@@ -1,10 +1,11 @@
 import React,{Component,useState,useEffect,useRef} from 'react';
-import { StyleSheet, Text, View,TextInput,TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View,TextInput,TouchableOpacity,Button,Image} from 'react-native';
 import {Picker} from '@react-native-picker/picker'
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import DateTimePicker from '@react-native-community/datetimepicker'
-import DatePicker from 'react-native-datepicker'
+import DateTimePicker from '@react-native-community/datetimepicker';
+import DatePicker from 'react-native-datepicker';
+import * as ImagePicker from 'expo-image-picker';
 import cityData from './allCities.json';
 import firebase from './firebase';
 import "firebase/auth"
@@ -29,7 +30,8 @@ function SignUp({navigation }){
     const [isLoading, setLoading] = useState(false);
     const stateKey = Object.keys(cityData);
     const [cityKey,setCityKey] = useState(Object.keys(cityData["Tamil Nadu"]));
-    const [showArr,setShowArr] = useState([1,0,0,0,0])
+    const [showArr,setShowArr] = useState([1,0,0,0,0,0]);
+    const [imgArr,setImgArr] = useState([0,0,0,0]);
 
    // const {userId } = route.params;
     //console.log(params,"params");
@@ -52,6 +54,24 @@ function SignUp({navigation }){
             console.log(error);
         }
     }
+    
+    const pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [16, 9],
+        quality: 1,
+        });
+
+        console.log(result);
+
+        if (!result.cancelled) {
+            //setImage(result.uri);
+            var imags = [...imgArr];
+            imags[0] = result.uri;
+            setImgArr(imags);
+        }
+    };
 
     const signupPress = ()=>{
         let flag = 0
@@ -154,12 +174,24 @@ function SignUp({navigation }){
                {// <Text style={Styles.logo}>Pubster App</Text>   
                }
                 <Text style={error?{color:"#ED4337",fontsize:11,padding:10,flex:1,justifyContent:"center",textAlign:"center"}:{display:"none"}}> {errorMessage} </Text> 
-                { showArr[0]?<TextInput style={Styles.inputView} placeholder="Username" onChangeText={(text)=>{setUserName(text)}}></TextInput>:null
+                { showArr[2]?<TextInput style={Styles.inputView} placeholder="Username" onChangeText={(text)=>{setUserName(text)}}></TextInput>:null
                 }
                 { showArr[1]?<TextInput style={Styles.inputView} placeholder="Email Id" onChangeText={(text)=>{setEmail(text)}}></TextInput>:null
                 }
                 {
-                  showArr[2]?<DatePicker
+                    showArr[0]?<View style={{backgroundColor:"grey",padding:10,margin:10}}>
+                        <TouchableOpacity onPress={()=>{pickImage()}}>
+                            <View style={{alignItems:"center",justifyContent:"center",backgroundColor:"white",padding:10,width: 200, height: 200 }}>
+                                {!imgArr[0]?<Text style={{fontSize:30,fontWeight:"bold"}}> + </Text>:
+                                <Image source={{ uri: imgArr[0] }} style={{ width: 200, height: 200 }} />}
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                    
+                    :null
+                }
+                {
+                  showArr[3]?<DatePicker
                         style={{width: 200}}
                         date={newD}
                         mode="date"
@@ -185,7 +217,7 @@ function SignUp({navigation }){
                     />:null
                 }
 
-                { showArr[3]?<Picker
+                { showArr[4]?<Picker
                         selectedValue={gender}
                         style={{backgroundColor:"#3E3E3E",
                             borderRadius:20,
@@ -262,12 +294,12 @@ function SignUp({navigation }){
                
             </View>
             {
-                 !showArr[4]?<TouchableOpacity style={Styles.signupBtn} onPress={()=>moveNext()}>
+                 !showArr[5]?<TouchableOpacity style={Styles.signupBtn} onPress={()=>moveNext()}>
                                 <Text style={{color:"white",fontWeight:"bold"}}>Next</Text>
                       </TouchableOpacity>:null
             }
             {
-                 showArr[4]?<TouchableOpacity style={Styles.signupBtn} onPress={()=>signupPress()}>
+                 showArr[5]?<TouchableOpacity style={Styles.signupBtn} onPress={()=>signupPress()}>
                                 <Text style={{color:"white",fontWeight:"bold"}}>SIGNUP</Text>
                       </TouchableOpacity>:null
             }
