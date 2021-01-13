@@ -1,24 +1,32 @@
 import React,{Component,useState,useEffect,useRef} from 'react';
-import { StyleSheet, Text, View,TextInput,TouchableOpacity,Button,Image} from 'react-native';
+import { StyleSheet, Text, View,TextInput,TouchableOpacity,Button,Image,ActivityIndicator, } from 'react-native';
 import {Picker} from '@react-native-picker/picker'
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import DatePicker from 'react-native-datepicker';
 import * as ImagePicker from 'expo-image-picker';
+import {Snackbar } from 'react-native-paper';
+import {validateName,validateEmail,validateAge,validatePassword} from "./validate"
+import {uriToBlob} from "./utils";
 import cityData from './allCities.json';
+import Loading from "./loading"
 import firebase from './firebase';
 import "firebase/auth"
 import "firebase/database"
+import "firebase/storage"
 
 function SignUp({navigation }){
 
     const [userName,setUserName] = useState('');
     const [email,setEmail] = useState('');
     const [password,setPassword] = useState('');
+    const [confirmPassword,setConfirmPassword] = useState('');
     const [gender,setGender] = useState('Male');
+    const [visible, setVisible] = useState(false);
     const [age,setAge] = useState(18);
     const [date, setDate] = useState(new Date(1598051730000));
+    const [showDate,setShowDate] = useState(false);
     const [newD,setNewD] = useState("2016-05-15")
     const [mode, setMode] = useState('date');
     const [phoneNo,setPhoneNo] = useState('');
@@ -42,7 +50,7 @@ function SignUp({navigation }){
     const [constructorHasRun,setConstructorHasRun] = useState(false);
     const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
-        setShow(Platform.OS === 'ios');
+       setShowDate(Platform.OS === 'ios');
         setDate(currentDate);
     };
     
@@ -77,52 +85,54 @@ function SignUp({navigation }){
 
     const signupPress = ()=>{
         let flag = 0
-        if(userName!='' && password!='' && email!="" && phoneNo!="" && city!=""){
-            let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-            console.log(reg.test(email),"vali")
-            if(reg.test(email)==0){
-                setError(1);
-                setErrorMessage("Enter a valid email id ");
-            }
-            else{
-                if(String(phoneNo).length>10){
-                    setError(1);
-                    setErrorMessage("Enter a valid Phone Number "); 
-                }
-                else{
-                    flag = 1
-                }
-            }
+        var valid = validatePassword(password,confirmPassword);
+        if (valid[0]==true){
+                flag = 1;
         }
         else{
             setError(1);
-            setErrorMessage("All fields are required");
+            setErrorMessage(valid[1]);
         }
-        if(false && flag==1){
+        if(flag==1){
             setLoading(true);
+            setError(1);
+            setErrorMessage("Staart");
             firebase
                 .auth()
                 .createUserWithEmailAndPassword(email, password)
                 .then((response) => {
                     const uid = response.user.uid;
                    // console.log("uid ::: ",uid);
-                    firebase
-                        .database().ref("User/"+uid).set({userName:userName,mail:email,age:age,phoneNo:phoneNo,city:city})
-                        .then((response)=>{
-                            navigation.navigate("Login")
+                   setError(1);
+                   setErrorMessage("created uid");
+                   upload_image(uid,imgArr[0],0).then(()=>{
+                      upload_image(uid,imgArr[1],1).then(()=>{
+                         upload_image(uid,imgArr[2],2).then(()=>{
+                             upload_image(uid,imgArr[3],3).then(()=>{
+                                firebase
+                                    .database().ref("User/"+uid).set({userName:userName,mail:email,age:age,phoneNo:phoneNo,city:city})
+                                    .then((response)=>{
+                                        setError(1);
+                                        setErrorMessage("over");
+                                        setLoading(false);
+                                        navigation.navigate("Login");
+
+                                    })
+                                    .catch(err =>{
+                                        console.log("err",err);
+                                        setError(1);
+                                        setErrorMessage(err.message); 
+                                        setLoading(false);
+                                    })
+                                })
+                            })
                         })
-                        .catch(err =>{
-                            console.log("err",err);
-                            setError(1);
-                            setErrorMessage(err.message); 
-                        })
-                    
+                     })  
                 }).catch(err =>{
                      console.log("err",err);
                      setError(1);
                      setErrorMessage(err.message); 
-                }).finally(()=>{
-                    setLoading(false);
+                     setLoading(false);
                 });
         }
     }
@@ -132,18 +142,74 @@ function SignUp({navigation }){
         setCityKey(Object.keys(cityData[itemValue]));
     }
     
+    const upload_image= (uid,uri,index)=>{
+        return new Promise((resolve, reject)=>{
+        const blob = uriToBlob(uri).then((response)=>{
+            console.log(response);
+            firebase.storage().ref().child(uid+'/photo_'+index+'.jpg').put(response, {
+                    contentType: 'image/jpeg'
+                }).then((snapshot)=>{
+                    console.log(snapshot);
+                   setError(1);
+                    setErrorMessage("upload");
+                    resolve(snapshot);
+                }).catch((error)=>{
+
+                    console.log(error.payload);
+                    reject(error);
+                });
+
+           
+
+        });
+    });   
+    }
+    
     const moveNext = ()=>{
         var vals = [...showArr];
         var index = 0;
+        var flag = 0;
+        var valid = [];
         for(var i=0;i<=4;i++){
             if(vals[i]==1){
                 index = i;
             }
         }
-        vals[index] = 0;
-        vals[index+1] = 1;
-        setViewText(viewTextArr[index+1])
-        setShowArr(vals);
+        if(index==0){
+            valid = validateName(userName);
+            //console.log(valid,"dqw")
+            //upload_image(imgArr[0]);
+                  
+        }
+        else if(index==1){
+            valid = validateEmail(email); 
+        }
+        else if(index==2){
+            console.log(imgArr);
+            if(imgArr[0]==0 || imgArr[1]==0 || imgArr[2]==0 || imgArr[3]==0 ){
+                valid = [false,"All images are required !"];
+                flag = 1;
+            }
+        }
+        else if(index==3){
+            valid = validateAge(date);
+            console.log(valid)
+            if(valid[0]==true){
+                setAge(valid[1]);
+            }
+        }       
+        else if(valid[0] == false){
+            setError(1);
+            setErrorMessage(valid[1]);
+            flag=1;
+        }  
+        if(flag==0){
+            setError(0);
+            vals[index] = 0;
+            vals[index+1] = 1;
+            setViewText(viewTextArr[index+1])
+            setShowArr(vals);
+        }
     }
 
     const moveBack = ()=>{
@@ -176,9 +242,12 @@ function SignUp({navigation }){
             {isLoading?<Loading />:null}
             <View style={{alignItems:'center',padding:0,width:"85%"}}>
                {// <Text style={Styles.logo}>Pubster App</Text>   
+               
+                   // loading?<ActivityIndicator size="large" color="#00ff00" />:null
+                   //<Text style={error?{color:"#ED4337",fontSize:11,padding:10,justifyContent:"center",textAlign:"center"}:{display:"none"}}> {errorMessage} </Text> 
+                
                }
                 <Text style={{fontSize:15,fontWeight:"bold",padding:10,alignSelf:"flex-start"}}>{viewText} </Text>
-                <Text style={error?{color:"#ED4337",fontSize:11,padding:10,justifyContent:"center",textAlign:"center"}:{display:"none"}}> {errorMessage} </Text> 
                 { showArr[0]?<TextInput style={Styles.inputView} placeholder="Username" onChangeText={(text)=>{setUserName(text)}}></TextInput>:null
                 }
                 { showArr[1]?<TextInput style={Styles.inputView} placeholder="Email Id" onChangeText={(text)=>{setEmail(text)}}></TextInput>:null
@@ -219,30 +288,19 @@ function SignUp({navigation }){
                     :null
                 }
                 {
-                  showArr[3]?<DatePicker
-                        style={{width: 200}}
-                        date={newD}
-                        mode="date"
-                        placeholder="select date"
-                        format="YYYY-MM-DD"
-                        minDate="2016-05-01"
-                        maxDate="2016-06-01"
-                        confirmBtnText="Confirm"
-                        cancelBtnText="Cancel"
-                        customStyles={{
-                        dateIcon: {
-                            position: 'absolute',
-                            left: 0,
-                            top: 4,
-                            marginLeft: 0
-                        },
-                        dateInput: {
-                            marginLeft: 36
-                        }
-                        // ... You can check the source to find the other keys.
-                        }}
-                        onDateChange={(date) => {setNewD(date)}}
-                    />:null
+                  showArr[3]?<View>
+                  <TouchableOpacity onPress={()=>{setShowDate(true)}}>
+                    <View style={{padding:10,borderWidth:1,borderColor:"grey",width:"100%"}}>
+                        <Text style={{fontSize:14,fontWeight:"300",width:"100%"}}>{ String(date.getDate()) +"/"+String(date.getMonth()) +"/"+String(date.getFullYear()) }</Text>
+                    </View>
+                  </TouchableOpacity>
+                  {showDate?<DateTimePicker 
+                        value={ date }
+                        mode='date'
+                        display='default'
+                        onChange={onChange} />:null
+                  }
+                  </View>:null
                 }
 
                 { showArr[4]?<Picker
@@ -320,7 +378,7 @@ function SignUp({navigation }){
                  showArr[5]?
                  <View style={{width:"100%"}}>
                     <TextInput style={Styles.inputView} secureTextEntry={true} placeholder="Password" onChangeText={(text)=>{setPassword(text)}}></TextInput>
-                    <TextInput style={Styles.inputView} secureTextEntry={true} placeholder="Confirm Password" onChangeText={(text)=>{setPassword(text)}}></TextInput>
+                    <TextInput style={Styles.inputView} secureTextEntry={true} placeholder="Confirm Password" onChangeText={(text)=>{setConfirmPassword(text)}}></TextInput>
                 </View>:null
                }
                
@@ -335,6 +393,12 @@ function SignUp({navigation }){
                                 <Text style={{color:"white",fontWeight:"bold"}}>SIGNUP</Text>
                       </TouchableOpacity>:null
             }
+            <Snackbar
+                visible={error}
+                onDismiss={()=>{setError(0)}}
+                >
+                {errorMessage}
+            </Snackbar>
         </View>
 
     );

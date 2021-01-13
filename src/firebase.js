@@ -8,7 +8,7 @@ const config = {
   authDomain: "pubster-54042-default-rtdb.firebaseio.com/",
   databaseURL: "https://pubster-54042-default-rtdb.firebaseio.com/",
   projectId: "pubster-54042",
-  storageBucket: "https://pubster-54042-default-rtdb.com/",
+  storageBucket: "gs://pubster-54042.appspot.com",
 };
 firebase.initializeApp(config);
 
