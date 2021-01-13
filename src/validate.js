@@ -38,7 +38,7 @@ export function validateAge(dob){
         return [true,age_now];
     }
     else{
-        return [false,"Your too young to go enter a pub!"];
+        return [false,"Your too young to enter a pub!"];
     }
 }
 

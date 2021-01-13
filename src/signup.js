@@ -110,7 +110,7 @@ function SignUp({navigation }){
                          upload_image(uid,imgArr[2],2).then(()=>{
                              upload_image(uid,imgArr[3],3).then(()=>{
                                 firebase
-                                    .database().ref("User/"+uid).set({userName:userName,mail:email,age:age,phoneNo:phoneNo,city:city})
+                                    .database().ref("User/"+uid).set({userName:userName,mail:email,age:age,gender:gender})
                                     .then((response)=>{
                                         setError(1);
                                         setErrorMessage("over");
