@@ -291,7 +291,7 @@ function SignUp({navigation }){
                   showArr[3]?<View>
                   <TouchableOpacity onPress={()=>{setShowDate(true)}}>
                     <View style={{padding:10,borderWidth:1,borderColor:"grey",width:"100%"}}>
-                        <Text style={{fontSize:14,fontWeight:"300",width:"100%"}}>{ String(date.getDate()) +"/"+String(date.getMonth()) +"/"+String(date.getFullYear()) }</Text>
+                        <Text style={{fontSize:14,fontWeight:"300",width:"100%"}}>{ String(date.getDate()) +"/"+String(date.getMonth()+1) +"/"+String(date.getFullYear()) }</Text>
                     </View>
                   </TouchableOpacity>
                   {showDate?<DateTimePicker 
