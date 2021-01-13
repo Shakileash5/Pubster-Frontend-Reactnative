@@ -29,9 +29,11 @@ function SignUp({navigation }){
     const [errorMessage,setErrorMessage] = useState("");
     const [isLoading, setLoading] = useState(false);
     const stateKey = Object.keys(cityData);
+    const [viewText,setViewText] = useState("Whats your name buddy?")
     const [cityKey,setCityKey] = useState(Object.keys(cityData["Tamil Nadu"]));
     const [showArr,setShowArr] = useState([1,0,0,0,0,0]);
     const [imgArr,setImgArr] = useState([0,0,0,0]);
+    const viewTextArr = ["Whats your name buddy?","Enter your email","Upload some of your pics","give us your DOB","whats your gender","Set up your password" ]
 
    // const {userId } = route.params;
     //console.log(params,"params");
@@ -55,7 +57,7 @@ function SignUp({navigation }){
         }
     }
     
-    const pickImage = async () => {
+    const pickImage = async (index) => {
         let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
         allowsEditing: true,
@@ -68,7 +70,7 @@ function SignUp({navigation }){
         if (!result.cancelled) {
             //setImage(result.uri);
             var imags = [...imgArr];
-            imags[0] = result.uri;
+            imags[index] = result.uri;
             setImgArr(imags);
         }
     };
@@ -140,6 +142,7 @@ function SignUp({navigation }){
         }
         vals[index] = 0;
         vals[index+1] = 1;
+        setViewText(viewTextArr[index+1])
         setShowArr(vals);
     }
 
@@ -153,6 +156,7 @@ function SignUp({navigation }){
         }
         vals[index] = 0;
         vals[index-1] = 1;
+        setViewText(viewTextArr[index-1])
         setShowArr(vals);
     }
 
@@ -173,19 +177,43 @@ function SignUp({navigation }){
             <View style={{alignItems:'center',padding:0,width:"85%"}}>
                {// <Text style={Styles.logo}>Pubster App</Text>   
                }
-                <Text style={error?{color:"#ED4337",fontsize:11,padding:10,flex:1,justifyContent:"center",textAlign:"center"}:{display:"none"}}> {errorMessage} </Text> 
-                { showArr[2]?<TextInput style={Styles.inputView} placeholder="Username" onChangeText={(text)=>{setUserName(text)}}></TextInput>:null
+                <Text style={{fontSize:15,fontWeight:"bold",padding:10,alignSelf:"flex-start"}}>{viewText} </Text>
+                <Text style={error?{color:"#ED4337",fontSize:11,padding:10,justifyContent:"center",textAlign:"center"}:{display:"none"}}> {errorMessage} </Text> 
+                { showArr[0]?<TextInput style={Styles.inputView} placeholder="Username" onChangeText={(text)=>{setUserName(text)}}></TextInput>:null
                 }
                 { showArr[1]?<TextInput style={Styles.inputView} placeholder="Email Id" onChangeText={(text)=>{setEmail(text)}}></TextInput>:null
                 }
                 {
-                    showArr[0]?<View style={{backgroundColor:"grey",padding:10,margin:10}}>
-                        <TouchableOpacity onPress={()=>{pickImage()}}>
-                            <View style={{alignItems:"center",justifyContent:"center",backgroundColor:"white",padding:10,width: 200, height: 200 }}>
-                                {!imgArr[0]?<Text style={{fontSize:30,fontWeight:"bold"}}> + </Text>:
-                                <Image source={{ uri: imgArr[0] }} style={{ width: 200, height: 200 }} />}
-                            </View>
-                        </TouchableOpacity>
+                    showArr[2]?<View style={{backgroundColor:"white",flexDirection:"column",borderRadius:15}}>
+                        <View style={{flexDirection:"row",padding:10}}>
+                            <TouchableOpacity onPress={()=>{pickImage(0)}}>
+                                <View elevation={7} style={{alignItems:"center",justifyContent:"center",backgroundColor:"white",width: 100, height: 100,margin:10 }}>
+                                    {!imgArr[0]?<Text style={{fontSize:30,fontWeight:"bold"}}> + </Text>:
+                                    <Image source={{ uri: imgArr[0] }} style={{ width: 100, height: 100 }} />}
+                                </View>
+                            </TouchableOpacity>
+                            <TouchableOpacity  onPress={()=>{pickImage(1)}}>
+                                <View elevation={7}  style={{alignItems:"center",justifyContent:"center",backgroundColor:"white",width: 100, height: 100,margin:10}}>
+                                    {!imgArr[1]?<Text style={{fontSize:30,fontWeight:"bold"}}> + </Text>:
+                                    <Image source={{ uri: imgArr[1] }} style={{ width: 100, height: 100 }} />}
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{flexDirection:"row",padding:10}}>
+                            <TouchableOpacity onPress={()=>{pickImage(2)}}>
+                                <View elevation={7} style={{alignItems:"center",justifyContent:"center",backgroundColor:"white",width: 100, height: 100,margin:10 }}>
+                                    {!imgArr[2]?<Text style={{fontSize:30,fontWeight:"bold"}}> + </Text>:
+                                    <Image source={{ uri: imgArr[2] }} style={{ width: 100, height: 100 }} />}
+                                </View>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={()=>{pickImage(3)}}>
+                                <View elevation={7} style={{alignItems:"center",justifyContent:"center",backgroundColor:"white",width: 100, height: 100,margin:10}}>
+                                    {!imgArr[3]?<Text style={{fontSize:30,fontWeight:"bold"}}> + </Text>:
+                                    <Image source={{ uri: imgArr[3] }} style={{ width: 100, height: 100 }} />}
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                        
                     </View>
                     
                     :null
@@ -289,7 +317,11 @@ function SignUp({navigation }){
                     </Picker>:null 
                }
                {
-                 showArr[4]?<TextInput style={Styles.inputView} secureTextEntry={true} placeholder="Password" onChangeText={(text)=>{setPassword(text)}}></TextInput>:null
+                 showArr[5]?
+                 <View style={{width:"100%"}}>
+                    <TextInput style={Styles.inputView} secureTextEntry={true} placeholder="Password" onChangeText={(text)=>{setPassword(text)}}></TextInput>
+                    <TextInput style={Styles.inputView} secureTextEntry={true} placeholder="Confirm Password" onChangeText={(text)=>{setPassword(text)}}></TextInput>
+                </View>:null
                }
                
             </View>
@@ -313,7 +345,6 @@ function SignUp({navigation }){
 const Styles = StyleSheet.create({
     container:{
         flex:1,
-        backgroundColor: '#16192E',
         justifyContent:'center',
         alignItems:'center',
     },

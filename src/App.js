@@ -14,15 +14,6 @@ function MyStack() {
   return (
     <NavigationContainer>{
         <Stack.Navigator>
-
-            <Stack.Screen name="SignUp" component={SignUp}
-             options={{
-                    headerShown:true,
-                    headerTransparent: true,
-                    headerTitleStyle:{color:"grey"},
-                    
-                }} 
-            />
             
             <Stack.Screen name="Login" component={Login} 
             options={{
@@ -31,7 +22,14 @@ function MyStack() {
                     headerTitleStyle:{color:"grey"},
                     
                 }} />
-
+            <Stack.Screen name="SignUp" component={SignUp}
+             options={{
+                    headerShown:true,
+                    headerTransparent: true,
+                    headerTitleStyle:{color:"grey"},
+                    
+                }} 
+            />
             <Stack.Screen name="dashScreen" component={dashScreen} 
                 options={{
                         headerShown:false,
